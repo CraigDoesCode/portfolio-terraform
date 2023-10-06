@@ -1,28 +1,28 @@
-name: Copywrite
+ame: Terraform Deploy
 
 on:
   push:
-    tags:
-      - v*
     branches:
-      - main
-  pull_request:
-  workflow_dispatch:
+      - main # Adjust this to the branch you want to trigger the deployment from
 
 jobs:
-  copywrite:
-    name: Run Header Copyright
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Install Copywrite
-        id: install
-        uses: hashicorp/setup-copywrite@v1.0.0
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
 
-      - name: Output Installed Copywrite Version
-        run: echo "Installed Copywrite CLI ${{steps.install.outputs.version}}"
+      - name: Terraform Init
+        run: terraform init
 
-      - name: Run Copywrite Header Compliance
-        run: copywrite headers --plan
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        env:
+          TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }} # Replace with your GitHub token
